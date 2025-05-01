@@ -748,16 +748,281 @@ document.addEventListener('DOMContentLoaded', () => {
                 questionText = `<span class="user-answer ${question.isCorrect ? 'correct-answer' : 'wrong-answer'}">${question.userAnswer}</span> ${question.operator} ${question.num2} = ${question.result} ${!question.isCorrect ? `<span class="correct-answer-text">(正確: ${question.num1})</span>` : ''}`;
             }
             
-            resultItem.innerHTML = `
-                <div class="result-number">${index + 1}</div>
-                <div class="result-content">
-                    <div class="result-question">${questionText}</div>
-                    <div class="result-status">${question.isCorrect ? '正確 ✓' : '錯誤 ✗'}</div>
-                </div>
-            `;
+            const resultContent = document.createElement('div');
+            resultContent.className = 'result-content';
+            
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'result-question';
+            questionDiv.innerHTML = questionText;
+            resultContent.appendChild(questionDiv);
+            
+            // Generate number line visualization
+            const numberLineContainer = document.createElement('div');
+            numberLineContainer.className = 'number-line-container';
+            
+            const numberLine = createNumberLineForQuestion(question);
+            numberLineContainer.appendChild(numberLine);
+            resultContent.appendChild(numberLineContainer);
+            
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'result-status';
+            statusDiv.innerHTML = question.isCorrect ? '正確 ✓' : '錯誤 ✗';
+            resultContent.appendChild(statusDiv);
+            
+            resultItem.innerHTML = `<div class="result-number">${index + 1}</div>`;
+            resultItem.appendChild(resultContent);
             
             detailedResultsContainer.appendChild(resultItem);
         });
+    }
+    
+    // Function to create number line visualization
+    function createNumberLineForQuestion(question) {
+        const numberLine = document.createElement('div');
+        numberLine.className = 'number-line';
+        
+        // Add descriptive label
+        const lineLabel = document.createElement('div');
+        lineLabel.className = 'line-label';
+        lineLabel.textContent = '數線:';
+        numberLine.appendChild(lineLabel);
+        
+        const numberLineBar = document.createElement('div');
+        numberLineBar.className = 'number-line-bar';
+        
+        // Different handling based on question type and operator
+        if (question.questionType === 'normal') {
+            // For questions like: 2 + 3 = ?
+            if (question.operator === '+') {
+                // Addition: num1 + num2 = result
+                // First segment (num1)
+                const segment1 = document.createElement('div');
+                segment1.className = 'number-segment first-segment';
+                segment1.style.left = '0%';
+                segment1.style.width = (question.num1 / question.result * 100) + '%';
+                
+                // Second segment (num2)
+                const segment2 = document.createElement('div');
+                segment2.className = 'number-segment second-segment';
+                segment2.style.left = (question.num1 / question.result * 100) + '%';
+                segment2.style.width = (question.num2 / question.result * 100) + '%';
+                
+                // Number values
+                const num1Value = document.createElement('div');
+                num1Value.className = 'number-value first-value';
+                num1Value.style.left = (question.num1 / question.result * 50) + '%';
+                num1Value.textContent = question.num1;
+                
+                const num2Value = document.createElement('div');
+                num2Value.className = 'number-value second-value';
+                num2Value.style.left = (question.num1 / question.result * 100 + question.num2 / question.result * 50) + '%';
+                num2Value.textContent = question.num2;
+                
+                const resultValue = document.createElement('div');
+                resultValue.className = 'number-value question-value';
+                resultValue.style.left = '100%';
+                resultValue.textContent = '?';
+                
+                // Add elements to the number line
+                numberLineBar.appendChild(segment1);
+                numberLineBar.appendChild(segment2);
+                numberLineBar.appendChild(num1Value);
+                numberLineBar.appendChild(num2Value);
+                numberLineBar.appendChild(resultValue);
+                
+            } else {
+                // Subtraction: num1 - num2 = result
+                // First segment (result)
+                const segment1 = document.createElement('div');
+                segment1.className = 'number-segment first-segment';
+                segment1.style.left = '0%';
+                segment1.style.width = (question.result / question.num1 * 100) + '%';
+                
+                // Second segment (num2)
+                const segment2 = document.createElement('div');
+                segment2.className = 'number-segment second-segment';
+                segment2.style.left = (question.result / question.num1 * 100) + '%';
+                segment2.style.width = (question.num2 / question.num1 * 100) + '%';
+                
+                // Number values
+                const resultValue = document.createElement('div');
+                resultValue.className = 'number-value question-value';
+                resultValue.style.left = (question.result / question.num1 * 50) + '%';
+                resultValue.textContent = '?';
+                
+                const num2Value = document.createElement('div');
+                num2Value.className = 'number-value second-value';
+                num2Value.style.left = (question.result / question.num1 * 100 + question.num2 / question.num1 * 50) + '%';
+                num2Value.textContent = question.num2;
+                
+                const num1Value = document.createElement('div');
+                num1Value.className = 'number-value first-value';
+                num1Value.style.left = '100%';
+                num1Value.textContent = question.num1;
+                
+                // Add elements to the number line
+                numberLineBar.appendChild(segment1);
+                numberLineBar.appendChild(segment2);
+                numberLineBar.appendChild(resultValue);
+                numberLineBar.appendChild(num2Value);
+                numberLineBar.appendChild(num1Value);
+            }
+        } else if (question.questionType === 'findNum2') {
+            // For questions like: 15 - ? = 10
+            if (question.operator === '+') {
+                // Addition: num1 + ? = result
+                // First segment (num1)
+                const segment1 = document.createElement('div');
+                segment1.className = 'number-segment first-segment';
+                segment1.style.left = '0%';
+                segment1.style.width = (question.num1 / question.result * 100) + '%';
+                
+                // Second segment (unknown)
+                const segment2 = document.createElement('div');
+                segment2.className = 'number-segment second-segment';
+                segment2.style.left = (question.num1 / question.result * 100) + '%';
+                segment2.style.width = (question.num2 / question.result * 100) + '%';
+                
+                // Number values
+                const num1Value = document.createElement('div');
+                num1Value.className = 'number-value first-value';
+                num1Value.style.left = (question.num1 / question.result * 50) + '%';
+                num1Value.textContent = question.num1;
+                
+                const num2Value = document.createElement('div');
+                num2Value.className = 'number-value question-value';
+                num2Value.style.left = (question.num1 / question.result * 100 + question.num2 / question.result * 50) + '%';
+                num2Value.textContent = '?';
+                
+                const resultValue = document.createElement('div');
+                resultValue.className = 'number-value result-value';
+                resultValue.style.left = '100%';
+                resultValue.textContent = question.result;
+                
+                // Add elements to the number line
+                numberLineBar.appendChild(segment1);
+                numberLineBar.appendChild(segment2);
+                numberLineBar.appendChild(num1Value);
+                numberLineBar.appendChild(num2Value);
+                numberLineBar.appendChild(resultValue);
+                
+            } else {
+                // Subtraction: num1 - ? = result
+                // First segment (result)
+                const segment1 = document.createElement('div');
+                segment1.className = 'number-segment first-segment';
+                segment1.style.left = '0%';
+                segment1.style.width = (question.result / question.num1 * 100) + '%';
+                
+                // Second segment (unknown)
+                const segment2 = document.createElement('div');
+                segment2.className = 'number-segment second-segment';
+                segment2.style.left = (question.result / question.num1 * 100) + '%';
+                segment2.style.width = (question.num2 / question.num1 * 100) + '%';
+                
+                // Number values
+                const resultValue = document.createElement('div');
+                resultValue.className = 'number-value result-value';
+                resultValue.style.left = (question.result / question.num1 * 50) + '%';
+                resultValue.textContent = question.result;
+                
+                const num2Value = document.createElement('div');
+                num2Value.className = 'number-value question-value';
+                num2Value.style.left = (question.result / question.num1 * 100 + question.num2 / question.num1 * 50) + '%';
+                num2Value.textContent = '?';
+                
+                const num1Value = document.createElement('div');
+                num1Value.className = 'number-value first-value';
+                num1Value.style.left = '100%';
+                num1Value.textContent = question.num1;
+                
+                // Add elements to the number line
+                numberLineBar.appendChild(segment1);
+                numberLineBar.appendChild(segment2);
+                numberLineBar.appendChild(resultValue);
+                numberLineBar.appendChild(num2Value);
+                numberLineBar.appendChild(num1Value);
+            }
+        } else {
+            // For questions like: ? + 3 = 6
+            if (question.operator === '+') {
+                // Addition: ? + num2 = result
+                // First segment (unknown)
+                const segment1 = document.createElement('div');
+                segment1.className = 'number-segment first-segment';
+                segment1.style.left = '0%';
+                segment1.style.width = (question.num1 / question.result * 100) + '%';
+                
+                // Second segment (num2)
+                const segment2 = document.createElement('div');
+                segment2.className = 'number-segment second-segment';
+                segment2.style.left = (question.num1 / question.result * 100) + '%';
+                segment2.style.width = (question.num2 / question.result * 100) + '%';
+                
+                // Number values
+                const num1Value = document.createElement('div');
+                num1Value.className = 'number-value question-value';
+                num1Value.style.left = (question.num1 / question.result * 50) + '%';
+                num1Value.textContent = '?';
+                
+                const num2Value = document.createElement('div');
+                num2Value.className = 'number-value second-value';
+                num2Value.style.left = (question.num1 / question.result * 100 + question.num2 / question.result * 50) + '%';
+                num2Value.textContent = question.num2;
+                
+                const resultValue = document.createElement('div');
+                resultValue.className = 'number-value result-value';
+                resultValue.style.left = '100%';
+                resultValue.textContent = question.result;
+                
+                // Add elements to the number line
+                numberLineBar.appendChild(segment1);
+                numberLineBar.appendChild(segment2);
+                numberLineBar.appendChild(num1Value);
+                numberLineBar.appendChild(num2Value);
+                numberLineBar.appendChild(resultValue);
+                
+            } else {
+                // Subtraction: ? - num2 = result
+                // First segment (result)
+                const segment1 = document.createElement('div');
+                segment1.className = 'number-segment first-segment';
+                segment1.style.left = '0%';
+                segment1.style.width = (question.result / question.num1 * 100) + '%';
+                
+                // Second segment (num2)
+                const segment2 = document.createElement('div');
+                segment2.className = 'number-segment second-segment';
+                segment2.style.left = (question.result / question.num1 * 100) + '%';
+                segment2.style.width = (question.num2 / question.num1 * 100) + '%';
+                
+                // Number values
+                const resultValue = document.createElement('div');
+                resultValue.className = 'number-value result-value';
+                resultValue.style.left = (question.result / question.num1 * 50) + '%';
+                resultValue.textContent = question.result;
+                
+                const num2Value = document.createElement('div');
+                num2Value.className = 'number-value second-value';
+                num2Value.style.left = (question.result / question.num1 * 100 + question.num2 / question.num1 * 50) + '%';
+                num2Value.textContent = question.num2;
+                
+                const num1Value = document.createElement('div');
+                num1Value.className = 'number-value question-value';
+                num1Value.style.left = '100%';
+                num1Value.textContent = '?';
+                
+                // Add elements to the number line
+                numberLineBar.appendChild(segment1);
+                numberLineBar.appendChild(segment2);
+                numberLineBar.appendChild(resultValue);
+                numberLineBar.appendChild(num2Value);
+                numberLineBar.appendChild(num1Value);
+            }
+        }
+        
+        numberLine.appendChild(numberLineBar);
+        return numberLine;
     }
     
     // Add event listener for the view detailed results button

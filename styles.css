@@ -733,6 +733,111 @@ input:checked ~ .toggle-text {
     color: #333;
 }
 
+.number-line-container {
+    margin: 15px 0;
+    padding: 5px 0;
+    font-size: 0.9rem;
+}
+
+.number-line {
+    position: relative;
+    height: 60px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.line-label {
+    font-weight: bold;
+    color: #666;
+    margin-right: 10px;
+    min-width: 50px;
+    text-align: right;
+}
+
+.number-line-bar {
+    height: 4px;
+    background-color: #ddd;
+    width: 100%;
+    position: relative;
+}
+
+.number-marker {
+    position: absolute;
+    bottom: -20px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.number-marker::before {
+    content: '';
+    width: 2px;
+    height: 8px;
+    background-color: #666;
+    margin-bottom: 3px;
+}
+
+.number-marker.start-marker, .number-marker.end-marker {
+    font-weight: bold;
+    color: #333;
+}
+
+.number-marker.middle-marker {
+    color: #ff7bab;
+    font-weight: bold;
+}
+
+.number-marker.question-marker {
+    color: #5aa9fc;
+    font-weight: bold;
+}
+
+.number-segment {
+    position: absolute;
+    height: 4px;
+    top: 0;
+}
+
+.number-segment.first-segment {
+    background-color: #ff7bab;
+}
+
+.number-segment.second-segment {
+    background-color: #5aa9fc;
+}
+
+.number-value {
+    position: absolute;
+    top: -20px;
+    transform: translateX(-50%);
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+.number-value.first-value {
+    background-color: #ff7bab;
+    color: white;
+}
+
+.number-value.second-value {
+    background-color: #5aa9fc;
+    color: white;
+}
+
+.number-value.result-value {
+    background-color: #87e6a2;
+    color: white;
+}
+
+.number-value.question-value {
+    background-color: #ffaa5b;
+    color: white;
+}
+
 .user-answer {
     font-weight: bold;
     padding: 2px 5px;
@@ -807,5 +912,17 @@ input:checked ~ .toggle-text {
     
     .detailed-result-item {
         padding: 12px;
+    }
+    
+    .number-line {
+        height: 50px;
+    }
+    
+    .number-marker, .number-value {
+        font-size: 0.8rem;
+    }
+    
+    .number-line-container {
+        margin: 10px 0;
     }
 } 
