@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加減法練習器</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>加減法練習器</h1>
+        
+        <div id="setup-screen">
+            <div class="setup-form">
+                <h2>請選擇練習設定</h2>
+                <div class="form-group">
+                    <label for="game-mode">遊戲模式：</label>
+                    <select id="game-mode">
+                        <option value="addition" selected>加法模式</option>
+                        <option value="subtraction">減法模式</option>
+                        <option value="mixed">混合模式</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="difficulty">難度：</label>
+                    <select id="difficulty">
+                        <option value="basic" selected>10以內加減法</option>
+                        <option value="advanced">兩位數加減法</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="question-count">題目數量：</label>
+                    <select id="question-count">
+                        <option value="5">5題</option>
+                        <option value="10" selected>10題</option>
+                        <option value="15">15題</option>
+                        <option value="20">20題</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="advanced-mode">進階模式：</label>
+                    <div class="toggle-container">
+                        <input type="checkbox" id="advanced-mode">
+                        <label for="advanced-mode" class="toggle-label"></label>
+                        <span class="toggle-text">關閉</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="history-limit">紀錄保存筆數：</label>
+                    <select id="history-limit">
+                        <option value="10">10筆</option>
+                        <option value="20">20筆</option>
+                        <option value="30" selected>30筆</option>
+                        <option value="50">50筆</option>
+                        <option value="100">100筆</option>
+                    </select>
+                </div>
+                <button id="start-btn" class="btn">開始練習</button>
+                <button id="view-history-btn" class="btn history-btn">查看紀錄</button>
+            </div>
+        </div>
+        
+        <div id="game-screen" class="hidden">
+            <div class="stats">
+                <div class="stat-item">題目： <span id="current-question">0</span>/<span id="total-questions">10</span></div>
+                <div class="stat-item">時間： <span id="timer">00:00</span></div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question">
+                    <span id="num1">?</span> <span id="operator">+</span> <span id="num2">?</span> = <span id="result">?</span>
+                </div>
+                <input type="number" id="answer-input" placeholder="請輸入答案">
+                <button id="submit-btn" class="btn">確認</button>
+            </div>
+        </div>
+        
+        <div id="result-screen" class="hidden">
+            <h2>練習結果</h2>
+            <div class="result-stats">
+                <div class="result-item">模式：<span id="result-mode">加法模式</span></div>
+                <div class="result-item">難度：<span id="result-difficulty">10以內加減法</span></div>
+                <div class="result-item">總題數：<span id="result-total">0</span></div>
+                <div class="result-item">正確數：<span id="result-correct">0</span></div>
+                <div class="result-item">錯誤數：<span id="result-incorrect">0</span></div>
+                <div class="result-item">正確率：<span id="result-accuracy">0%</span></div>
+                <div class="result-item">花費時間：<span id="result-time">00:00</span></div>
+            </div>
+            <div class="trend-summary" id="result-trend-summary">
+                <!-- Trend summary will be added dynamically here -->
+            </div>
+            <button id="retry-btn" class="btn">再來一次</button>
+            <button id="view-history-btn-result" class="btn history-btn">查看紀錄</button>
+        </div>
+
+        <div id="history-screen" class="hidden">
+            <h2>練習紀錄</h2>
+            <div class="mode-tabs">
+                <button id="all-mode-tab" class="mode-tab active">全部</button>
+                <button id="addition-mode-tab" class="mode-tab">加法模式</button>
+                <button id="subtraction-mode-tab" class="mode-tab">減法模式</button>
+                <button id="mixed-mode-tab" class="mode-tab">混合模式</button>
+            </div>
+            <div id="history-container" class="history-container">
+                <!-- History items will be dynamically generated here -->
+            </div>
+            <div class="history-controls">
+                <button id="back-to-home-btn" class="btn">返回首頁</button>
+                <button id="clear-history-btn" class="btn clear-btn">清除紀錄</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html> 
