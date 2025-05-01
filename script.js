@@ -581,6 +581,11 @@ document.addEventListener('DOMContentLoaded', () => {
         gameState.currentQuestion = 0;
         gameState.correctAnswers = 0;
         gameState.incorrectAnswers = 0;
+        gameState.questionResults = []; // Reset question results
+        
+        // Hide the result screen and detailed results screen
+        resultScreen.classList.add('hidden');
+        detailedResultsScreen.classList.add('hidden');
         
         // Start game again
         startGame();
