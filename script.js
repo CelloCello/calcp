@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameScreen = document.getElementById('game-screen');
     const resultScreen = document.getElementById('result-screen');
     const historyScreen = document.getElementById('history-screen');
+    const detailedResultsScreen = document.getElementById('detailed-results-screen');
     
     const gameModeSelect = document.getElementById('game-mode');
     const difficultySelect = document.getElementById('difficulty');
@@ -61,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentQuestionType: null, // 'normal', 'findNum2', or 'findNum1'
         advancedMode: false,
         historyLimit: 30,
-        currentAnswer: null
+        currentAnswer: null,
+        questionResults: [] // Track all questions and answers
     };
     
     // Toggle functionality for advanced mode
@@ -187,6 +189,18 @@ document.addEventListener('DOMContentLoaded', () => {
         answerInput.focus();
         
         currentQuestionEl.textContent = gameState.currentQuestion + 1;
+        
+        // Save current question details
+        gameState.currentQuestionData = {
+            num1: gameState.currentNum1,
+            num2: gameState.currentNum2,
+            operator: gameState.currentOperator,
+            result: gameState.currentResult,
+            questionType: gameState.currentQuestionType,
+            answer: gameState.currentAnswer,
+            userAnswer: null,
+            isCorrect: null
+        };
     }
     
     function updateTimer() {
@@ -468,7 +482,8 @@ document.addEventListener('DOMContentLoaded', () => {
             incorrectAnswers: gameState.incorrectAnswers,
             accuracy: Math.round((gameState.correctAnswers / gameState.questionCount) * 100),
             time: timeSpent,
-            date: new Date().toISOString()
+            date: new Date().toISOString(),
+            questionResults: gameState.questionResults // Save detailed question results
         };
         
         addResultToHistory(result);
@@ -542,6 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameState.currentQuestion = 0;
         gameState.correctAnswers = 0;
         gameState.incorrectAnswers = 0;
+        gameState.questionResults = []; // Reset question results
         
         // Update UI
         totalQuestionsEl.textContent = gameState.questionCount;
@@ -632,6 +648,11 @@ document.addEventListener('DOMContentLoaded', () => {
             gameState.incorrectAnswers++;
         }
         
+        // Store user answer and result
+        gameState.currentQuestionData.userAnswer = userAnswer;
+        gameState.currentQuestionData.isCorrect = isCorrect;
+        gameState.questionResults.push({...gameState.currentQuestionData});
+        
         showFeedback(isCorrect);
         
         // Proceed to next question after a short delay
@@ -697,4 +718,49 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load saved settings
     loadSettings();
+    
+    // Add function to display detailed results
+    function showDetailedResults() {
+        setupScreen.classList.add('hidden');
+        gameScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+        historyScreen.classList.add('hidden');
+        detailedResultsScreen.classList.remove('hidden');
+        
+        const detailedResultsContainer = document.getElementById('detailed-results-container');
+        detailedResultsContainer.innerHTML = '';
+        
+        gameState.questionResults.forEach((question, index) => {
+            const resultItem = document.createElement('div');
+            resultItem.className = `detailed-result-item ${question.isCorrect ? 'correct' : 'incorrect'}`;
+            
+            let questionText = '';
+            if (question.questionType === 'normal') {
+                questionText = `${question.num1} ${question.operator} ${question.num2} = <span class="user-answer ${question.isCorrect ? 'correct-answer' : 'wrong-answer'}">${question.userAnswer}</span> <span class="correct-answer-text">${!question.isCorrect ? `(正確: ${question.result})` : ''}</span>`;
+            } else if (question.questionType === 'findNum2') {
+                questionText = `${question.num1} ${question.operator} <span class="user-answer ${question.isCorrect ? 'correct-answer' : 'wrong-answer'}">${question.userAnswer}</span> = ${question.result} ${!question.isCorrect ? `<span class="correct-answer-text">(正確: ${question.num2})</span>` : ''}`;
+            } else {
+                questionText = `<span class="user-answer ${question.isCorrect ? 'correct-answer' : 'wrong-answer'}">${question.userAnswer}</span> ${question.operator} ${question.num2} = ${question.result} ${!question.isCorrect ? `<span class="correct-answer-text">(正確: ${question.num1})</span>` : ''}`;
+            }
+            
+            resultItem.innerHTML = `
+                <div class="result-number">${index + 1}</div>
+                <div class="result-content">
+                    <div class="result-question">${questionText}</div>
+                    <div class="result-status">${question.isCorrect ? '正確 ✓' : '錯誤 ✗'}</div>
+                </div>
+            `;
+            
+            detailedResultsContainer.appendChild(resultItem);
+        });
+    }
+    
+    // Add event listener for the view detailed results button
+    document.getElementById('view-detailed-results-btn').addEventListener('click', showDetailedResults);
+    
+    // Add event listener for the back button on the detailed results screen
+    document.getElementById('back-to-result-btn').addEventListener('click', () => {
+        detailedResultsScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+    });
 }); 
